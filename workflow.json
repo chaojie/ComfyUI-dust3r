@@ -1,0 +1,614 @@
+{
+  "last_node_id": 15,
+  "last_link_id": 30,
+  "nodes": [
+    {
+      "id": 5,
+      "type": "ImageBatch",
+      "pos": [
+        383,
+        453
+      ],
+      "size": {
+        "0": 210,
+        "1": 46
+      },
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image1",
+          "type": "IMAGE",
+          "link": 4
+        },
+        {
+          "name": "image2",
+          "type": "IMAGE",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            5
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageBatch"
+      }
+    },
+    {
+      "id": 3,
+      "type": "LoadImage",
+      "pos": [
+        2,
+        308
+      ],
+      "size": {
+        "0": 315,
+        "1": 314
+      },
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            4
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "1.jpg",
+        "image"
+      ]
+    },
+    {
+      "id": 4,
+      "type": "LoadImage",
+      "pos": [
+        2,
+        679
+      ],
+      "size": {
+        "0": 315,
+        "1": 314
+      },
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            3
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "2.jpg",
+        "image"
+      ]
+    },
+    {
+      "id": 2,
+      "type": "Dust3rRun",
+      "pos": [
+        643,
+        174
+      ],
+      "size": {
+        "0": 315,
+        "1": 318
+      },
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "Dust3rModel",
+          "link": 6
+        },
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "STRING",
+          "links": [
+            7
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Dust3rRun"
+      },
+      "widgets_values": [
+        "cuda",
+        512,
+        "complete",
+        "linear",
+        300,
+        3,
+        0.05,
+        false,
+        false,
+        true,
+        true
+      ]
+    },
+    {
+      "id": 1,
+      "type": "Dust3rLoader",
+      "pos": [
+        1,
+        154
+      ],
+      "size": {
+        "0": 315,
+        "1": 82
+      },
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "model",
+          "type": "Dust3rModel",
+          "links": [
+            6
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Dust3rLoader"
+      },
+      "widgets_values": [
+        "DUSt3R_ViTLarge_BaseDecoder_512_dpt.pth",
+        "cuda"
+      ]
+    },
+    {
+      "id": 6,
+      "type": "ShowText|pysssss",
+      "pos": [
+        1013.6000366210938,
+        197.80003356933594
+      ],
+      "size": {
+        "0": 315,
+        "1": 76
+      },
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "text",
+          "type": "STRING",
+          "link": 7,
+          "widget": {
+            "name": "text"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": [
+            11
+          ],
+          "shape": 6,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ShowText|pysssss"
+      },
+      "widgets_values": [
+        "",
+        "C:\\cj\\ComfyUI_windows_portable\\ComfyUI/custom_nodes/ComfyUI-dust3r/output\\scene.glb"
+      ]
+    },
+    {
+      "id": 11,
+      "type": "Panda3dTest",
+      "pos": [
+        1974.4000854492188,
+        348.2000427246094
+      ],
+      "size": {
+        "0": 315,
+        "1": 562
+      },
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "base",
+          "type": "Panda3dBase",
+          "link": 12
+        },
+        {
+          "name": "model0",
+          "type": "Panda3dModel",
+          "link": 13
+        },
+        {
+          "name": "model1",
+          "type": "Panda3dModel",
+          "link": null
+        },
+        {
+          "name": "model2",
+          "type": "Panda3dModel",
+          "link": null
+        },
+        {
+          "name": "model3",
+          "type": "Panda3dModel",
+          "link": null
+        },
+        {
+          "name": "model4",
+          "type": "Panda3dModel",
+          "link": null
+        },
+        {
+          "name": "model5",
+          "type": "Panda3dModel",
+          "link": null
+        },
+        {
+          "name": "model6",
+          "type": "Panda3dModel",
+          "link": null
+        },
+        {
+          "name": "model7",
+          "type": "Panda3dModel",
+          "link": null
+        },
+        {
+          "name": "model8",
+          "type": "Panda3dModel",
+          "link": null
+        },
+        {
+          "name": "model9",
+          "type": "Panda3dModel",
+          "link": null
+        },
+        {
+          "name": "model10",
+          "type": "Panda3dModel",
+          "link": null
+        },
+        {
+          "name": "textures",
+          "type": "Panda3dTexture",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            14
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Panda3dTest"
+      },
+      "widgets_values": [
+        14,
+        "{\"r\":[0, 10,20,30,40,50,60,70,80,90,100,110,120,130]}",
+        "{}",
+        "{}",
+        "{}",
+        "{}",
+        "{}",
+        "{}",
+        "{}",
+        "{}",
+        "{}",
+        "{}"
+      ]
+    },
+    {
+      "id": 12,
+      "type": "PreviewImage",
+      "pos": [
+        2385,
+        354
+      ],
+      "size": [
+        210,
+        246
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 14
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    },
+    {
+      "id": 9,
+      "type": "Panda3dLoadModel",
+      "pos": [
+        1589,
+        405
+      ],
+      "size": [
+        315,
+        314
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "base",
+          "type": "Panda3dBase",
+          "link": 30
+        },
+        {
+          "name": "loader",
+          "type": "Panda3dLoader",
+          "link": 9
+        },
+        {
+          "name": "parent",
+          "type": "Panda3dModel",
+          "link": 10
+        },
+        {
+          "name": "model_path",
+          "type": "STRING",
+          "link": 11,
+          "widget": {
+            "name": "model_path"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "base",
+          "type": "Panda3dBase",
+          "links": [
+            12
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "model",
+          "type": "Panda3dModel",
+          "links": [
+            13
+          ],
+          "shape": 3,
+          "slot_index": 1
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Panda3dLoadModel"
+      },
+      "widgets_values": [
+        "C:\\cj\\ComfyUI_windows_portable\\ComfyUI/custom_nodes/ComfyUI-Panda3d/models/carousel_base",
+        0,
+        0,
+        0,
+        180,
+        0,
+        0,
+        9,
+        9,
+        9
+      ]
+    },
+    {
+      "id": 10,
+      "type": "Panda3dBase",
+      "pos": [
+        1481,
+        215
+      ],
+      "size": {
+        "0": 210,
+        "1": 66
+      },
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "base",
+          "type": "Panda3dBase",
+          "links": [
+            30
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "loader",
+          "type": "Panda3dLoader",
+          "links": [
+            9
+          ],
+          "shape": 3,
+          "slot_index": 1
+        },
+        {
+          "name": "render",
+          "type": "Panda3dModel",
+          "links": [
+            10
+          ],
+          "shape": 3,
+          "slot_index": 2
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Panda3dBase"
+      }
+    }
+  ],
+  "links": [
+    [
+      3,
+      4,
+      0,
+      5,
+      1,
+      "IMAGE"
+    ],
+    [
+      4,
+      3,
+      0,
+      5,
+      0,
+      "IMAGE"
+    ],
+    [
+      5,
+      5,
+      0,
+      2,
+      1,
+      "IMAGE"
+    ],
+    [
+      6,
+      1,
+      0,
+      2,
+      0,
+      "Dust3rModel"
+    ],
+    [
+      7,
+      2,
+      0,
+      6,
+      0,
+      "STRING"
+    ],
+    [
+      9,
+      10,
+      1,
+      9,
+      1,
+      "Panda3dLoader"
+    ],
+    [
+      10,
+      10,
+      2,
+      9,
+      2,
+      "Panda3dModel"
+    ],
+    [
+      11,
+      6,
+      0,
+      9,
+      3,
+      "STRING"
+    ],
+    [
+      12,
+      9,
+      0,
+      11,
+      0,
+      "Panda3dBase"
+    ],
+    [
+      13,
+      9,
+      1,
+      11,
+      1,
+      "Panda3dModel"
+    ],
+    [
+      14,
+      11,
+      0,
+      12,
+      0,
+      "IMAGE"
+    ],
+    [
+      30,
+      10,
+      0,
+      9,
+      0,
+      "Panda3dBase"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {},
+  "version": 0.4
+}

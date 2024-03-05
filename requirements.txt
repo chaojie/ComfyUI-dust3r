@@ -1,0 +1,8 @@
+roma
+matplotlib
+tqdm
+opencv-python
+scipy
+einops
+trimesh
+pyglet<2
