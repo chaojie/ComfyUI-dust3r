@@ -3,7 +3,7 @@ import sys
 import folder_paths
 comfy_path = os.path.dirname(folder_paths.__file__)
 sys.path.append(f'{comfy_path}/custom_nodes/ComfyUI-dust3r')
-print(sys.path)
+#print(sys.path)
 
 from PIL import Image
 
