@@ -204,6 +204,17 @@ class Dust3rRun:
         num_files = len(images)
         max_winsize = max(1, (num_files - 1)//2)
         
+        
+        if scenegraph_type == "swin":
+            winsize = max_winsize
+            refid = 0
+        elif scenegraph_type == "oneref":
+            winsize = max_winsize
+            refid = 0
+        else:
+            winsize = max_winsize
+            refid = 0
+        
         for filename in os.listdir(input_path):
             file_path = os.path.join(input_path, filename)
             os.remove(file_path)
