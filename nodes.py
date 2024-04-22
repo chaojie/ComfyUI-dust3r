@@ -30,6 +30,11 @@ torch.backends.cuda.matmul.allow_tf32 = True  # for gpu >= Ampere and pytorch >=
 batch_size = 1
 
 pretrained_weights_path=f'{comfy_path}/custom_nodes/ComfyUI-dust3r/checkpoints'
+
+if not os.path.exists(pretrained_weights_path):
+    os.makedirs(pretrained_weights_path)
+    print(f"folder created：{pretrained_weights_path}")
+
 pretrained_weights=os.listdir(pretrained_weights_path)
 
 input_path=f'{comfy_path}/custom_nodes/ComfyUI-dust3r/input'
