@@ -269,6 +269,23 @@ class Dust3rRun:
 
         return (outfile,)
 
+def combine_camera_motion(RT_0, RT_1):
+    RT = copy.deepcopy(RT_0[-1])
+    #print(f'{RT}')
+    R = RT[:,:3]
+    R_inv = RT[:,:3].T
+    T =  RT[:,-1]
+
+    temp = []
+    for _RT in RT_1:
+        _RT[:,:3] = np.dot(_RT[:,:3], R)
+        _RT[:,-1] =  _RT[:,-1] + np.dot(np.dot(_RT[:,:3], R_inv), T) 
+        temp.append(_RT)
+
+    RT_1 = np.stack(temp)
+
+    return np.concatenate([RT_0, RT_1], axis=0)
+
 class CameraPoseVideo:
     @classmethod
     def INPUT_TYPES(cls):
@@ -289,7 +306,7 @@ class CameraPoseVideo:
     def run(self,model,device,images,image_size,scenegraph_type):
         winsize=1
         refid=0
-        num_files = len(images)
+        num_files = 2
         max_winsize = max(1, (num_files - 1)//2)
         
         
@@ -303,32 +320,50 @@ class CameraPoseVideo:
             winsize = max_winsize
             refid = 0
         
-        for filename in os.listdir(input_path):
-            file_path = os.path.join(input_path, filename)
-            os.remove(file_path)
+        RT=None
         ind = 0
+        poses=[]
         for image in images:
-            image = 255.0 * image.cpu().numpy()
+            for filename in os.listdir(input_path):
+                file_path = os.path.join(input_path, filename)
+                os.remove(file_path)
+            image0 = images[0]
+            if ind>0:
+                image0 = images[ind-1]
+            image0 = 255.0 *image0.cpu().numpy()
+            image0 = Image.fromarray(np.clip(image0, 0, 255).astype(np.uint8))
+            image0_path=f'{input_path}/0.png'
+            image0.save(image0_path)
+
+            image = 255.0 * images[ind].cpu().numpy()
             image = Image.fromarray(np.clip(image, 0, 255).astype(np.uint8))
-            image_path=f'{input_path}/{ind}.png'
+            image_path=f'{input_path}/1.png'
             image.save(image_path)
             ind=ind+1
-        imgs = load_images(input_path, size=image_size)
-        if len(imgs) == 1:
-            imgs = [imgs[0], copy.deepcopy(imgs[0])]
-            imgs[1]['idx'] = 1
-        if scenegraph_type == "swin":
-            scenegraph_type = scenegraph_type + "-" + str(winsize)
-        elif scenegraph_type == "oneref":
-            scenegraph_type = scenegraph_type + "-" + str(refid)
-        pairs = make_pairs(imgs, scene_graph=scenegraph_type, prefilter=None, symmetrize=True)
-        output = inference(pairs, model, device, batch_size=batch_size)
-        mode = GlobalAlignerMode.PointCloudOptimizer if len(imgs) > 2 else GlobalAlignerMode.PairViewer
-        scene = global_aligner(output, device=device, mode=mode)
-        
-        print(f'{scene.get_im_poses().tolist()}')
 
-        return (scene.get_im_poses(),)
+            imgs = load_images([image0_path,image_path], size=image_size)
+            if len(imgs) == 1:
+                imgs = [imgs[0], copy.deepcopy(imgs[0])]
+                imgs[1]['idx'] = 1
+            if scenegraph_type == "swin":
+                scenegraph_type = scenegraph_type + "-" + str(winsize)
+            elif scenegraph_type == "oneref":
+                scenegraph_type = scenegraph_type + "-" + str(refid)
+                
+            pairs = make_pairs(imgs, scene_graph=scenegraph_type, prefilter=None, symmetrize=True)
+            output = inference(pairs, model, device, batch_size=batch_size)
+            #mode = GlobalAlignerMode.PointCloudOptimizer if len(imgs) > 2 else GlobalAlignerMode.PairViewer
+            mode = GlobalAlignerMode.PairViewer
+            scene = global_aligner(output, device=device, mode=mode)
+            im_poses=scene.get_im_poses().tolist()[0]
+            if RT is None:
+                RT=np.array([[im_poses[0],im_poses[1],im_poses[2]]])
+            else:
+                RT1=np.array([im_poses[0],im_poses[1],im_poses[2]])
+                RT=combine_camera_motion(RT,[RT1])
+            poses.append(im_poses)
+
+        return (RT,)
         
 
 NODE_CLASS_MAPPINGS = {
