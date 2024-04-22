@@ -63,7 +63,7 @@ class PairViewer (BasePCOptimizer):
             rel_poses.append(torch.from_numpy(pose.astype(np.float32)))
 
         # let's use the pair with the most confidence
-        if confs[0] > confs[1]:
+        if False:#confs[0] > confs[1]:
             # ptcloud is expressed in camera1
             self.im_poses = [torch.eye(4), rel_poses[1]]  # I, cam2-to-cam1
             self.depth = [self.pred_i['0_1'][..., 2], geotrf(inv(rel_poses[1]), self.pred_j['0_1'])[..., 2]]

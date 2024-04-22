@@ -264,7 +264,85 @@ class Dust3rRun:
 
         return (outfile,)
 
+class CameraPoseVideo:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "model": ("Dust3rModel",),
+                "device": ("STRING",{"default":"cuda"}),
+                "images": ("IMAGE",),
+                "image_size": ("INT",{"default":512}),
+                "scenegraph_type": (["complete","swin","oneref"],{"default":"complete"}),
+            },
+        }
+
+    RETURN_TYPES = ("CameraPose",)
+    FUNCTION = "run"
+    CATEGORY = "Dust3r"
+
+    def run(self,model,device,images,image_size,scenegraph_type):
+        winsize=1
+        refid=0
+        num_files = 2
+        max_winsize = max(1, (num_files - 1)//2)
+        
+        
+        if scenegraph_type == "swin":
+            winsize = max_winsize
+            refid = 0
+        elif scenegraph_type == "oneref":
+            winsize = max_winsize
+            refid = 0
+        else:
+            winsize = max_winsize
+            refid = 0
+        
+        ind = 0
+        poses=[]
+        for image in images:
+            for filename in os.listdir(input_path):
+                file_path = os.path.join(input_path, filename)
+                os.remove(file_path)
+            image0 = images[0]
+            #if ind>0:
+            #    image0 = images[ind-1]
+            image0 = 255.0 *image0.cpu().numpy()
+            image0 = Image.fromarray(np.clip(image0, 0, 255).astype(np.uint8))
+            image0_path=f'{input_path}/0.png'
+            image0.save(image0_path)
+
+            image = 255.0 * images[ind].cpu().numpy()
+            image = Image.fromarray(np.clip(image, 0, 255).astype(np.uint8))
+            image_path=f'{input_path}/1.png'
+            image.save(image_path)
+            ind=ind+1
+
+            imgs = load_images([image0_path,image_path], size=image_size)
+            if len(imgs) == 1:
+                imgs = [imgs[0], copy.deepcopy(imgs[0])]
+                imgs[1]['idx'] = 1
+            if scenegraph_type == "swin":
+                scenegraph_type = scenegraph_type + "-" + str(winsize)
+            elif scenegraph_type == "oneref":
+                scenegraph_type = scenegraph_type + "-" + str(refid)
+                
+            pairs = make_pairs(imgs, scene_graph=scenegraph_type, prefilter=None, symmetrize=True)
+            output = inference(pairs, model, device, batch_size=batch_size)
+            #mode = GlobalAlignerMode.PointCloudOptimizer if len(imgs) > 2 else GlobalAlignerMode.PairViewer
+            mode = GlobalAlignerMode.PairViewer
+            scene = global_aligner(output, device=device, mode=mode)
+            poses.append(scene.im_poses.tolist()[0])
+
+        tensor=torch.Tensor(poses)
+        
+        print(f'{tensor.tolist()}')
+
+        return (tensor,)
+        
+
 NODE_CLASS_MAPPINGS = {
     "Dust3rLoader":Dust3rLoader,
     "Dust3rRun":Dust3rRun,
+    "CameraPoseVideo":CameraPoseVideo,
 }
