@@ -289,7 +289,7 @@ class CameraPoseVideo:
     def run(self,model,device,images,image_size,scenegraph_type):
         winsize=1
         refid=0
-        num_files = 2
+        num_files = len(images)
         max_winsize = max(1, (num_files - 1)//2)
         
         
@@ -303,47 +303,32 @@ class CameraPoseVideo:
             winsize = max_winsize
             refid = 0
         
+        for filename in os.listdir(input_path):
+            file_path = os.path.join(input_path, filename)
+            os.remove(file_path)
         ind = 0
-        poses=[]
         for image in images:
-            for filename in os.listdir(input_path):
-                file_path = os.path.join(input_path, filename)
-                os.remove(file_path)
-            image0 = images[0]
-            #if ind>0:
-            #    image0 = images[ind-1]
-            image0 = 255.0 *image0.cpu().numpy()
-            image0 = Image.fromarray(np.clip(image0, 0, 255).astype(np.uint8))
-            image0_path=f'{input_path}/0.png'
-            image0.save(image0_path)
-
-            image = 255.0 * images[ind].cpu().numpy()
+            image = 255.0 * image.cpu().numpy()
             image = Image.fromarray(np.clip(image, 0, 255).astype(np.uint8))
-            image_path=f'{input_path}/1.png'
+            image_path=f'{input_path}/{ind}.png'
             image.save(image_path)
             ind=ind+1
-
-            imgs = load_images([image0_path,image_path], size=image_size)
-            if len(imgs) == 1:
-                imgs = [imgs[0], copy.deepcopy(imgs[0])]
-                imgs[1]['idx'] = 1
-            if scenegraph_type == "swin":
-                scenegraph_type = scenegraph_type + "-" + str(winsize)
-            elif scenegraph_type == "oneref":
-                scenegraph_type = scenegraph_type + "-" + str(refid)
-                
-            pairs = make_pairs(imgs, scene_graph=scenegraph_type, prefilter=None, symmetrize=True)
-            output = inference(pairs, model, device, batch_size=batch_size)
-            #mode = GlobalAlignerMode.PointCloudOptimizer if len(imgs) > 2 else GlobalAlignerMode.PairViewer
-            mode = GlobalAlignerMode.PairViewer
-            scene = global_aligner(output, device=device, mode=mode)
-            poses.append(scene.im_poses.tolist()[0])
-
-        tensor=torch.Tensor(poses)
+        imgs = load_images(input_path, size=image_size)
+        if len(imgs) == 1:
+            imgs = [imgs[0], copy.deepcopy(imgs[0])]
+            imgs[1]['idx'] = 1
+        if scenegraph_type == "swin":
+            scenegraph_type = scenegraph_type + "-" + str(winsize)
+        elif scenegraph_type == "oneref":
+            scenegraph_type = scenegraph_type + "-" + str(refid)
+        pairs = make_pairs(imgs, scene_graph=scenegraph_type, prefilter=None, symmetrize=True)
+        output = inference(pairs, model, device, batch_size=batch_size)
+        mode = GlobalAlignerMode.PointCloudOptimizer if len(imgs) > 2 else GlobalAlignerMode.PairViewer
+        scene = global_aligner(output, device=device, mode=mode)
         
-        print(f'{tensor.tolist()}')
+        print(f'{scene.get_im_poses().tolist()}')
 
-        return (tensor,)
+        return (scene.get_im_poses(),)
         
 
 NODE_CLASS_MAPPINGS = {
