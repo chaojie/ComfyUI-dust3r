@@ -12,7 +12,7 @@ Download and place in the directory `ComfyUI\custom_nodes\ComfyUI-dust3r\checkpo
 
 ## Install
 
-pip install -r requirements.txt
+no need ~~pip install -r requirements.txt~~, it will install dependencies automatically.
 
 ## Basic workflow
 
