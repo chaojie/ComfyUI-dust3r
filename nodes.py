@@ -286,6 +286,20 @@ def combine_camera_motion(RT_0, RT_1):
 
     return np.concatenate([RT_0, RT_1], axis=0)
 
+def ndarray_to_poses(RT: np.ndarray) -> list[list[float]]:
+    '''
+    Converts ndarray (motion) to cameractrl_poses.
+    '''
+    motion_list=RT.tolist()
+    poses = []
+    for motion in motion_list:
+        traj = [0, 0.474812461, 0.844111024, 0.5, 0.5, 1280, 720]
+        traj.extend(motion[0])
+        traj.extend(motion[1])
+        traj.extend(motion[2])
+        poses.append(traj)
+    return poses
+
 class CameraPoseVideo:
     @classmethod
     def INPUT_TYPES(cls):
@@ -299,7 +313,7 @@ class CameraPoseVideo:
             },
         }
 
-    RETURN_TYPES = ("CameraPose",)
+    RETURN_TYPES = ("CAMERACTRL_POSES",)
     FUNCTION = "run"
     CATEGORY = "Dust3r"
 
@@ -363,7 +377,7 @@ class CameraPoseVideo:
                 RT=combine_camera_motion(RT,[RT1])
             poses.append(im_poses)
 
-        return (RT,)
+        return (ndarray_to_poses(RT),)
         
 
 NODE_CLASS_MAPPINGS = {
