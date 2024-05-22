@@ -1,0 +1,15 @@
+[project]
+name = "comfyui-dust3r"
+description = "ComfyUI dust3r"
+version = "1.0.0"
+license = "LICENSE"
+dependencies = ["roma", "matplotlib", "tqdm", "opencv-python", "scipy", "einops", "trimesh", "pyglet<2"]
+
+[project.urls]
+Repository = "https://github.com/chaojie/ComfyUI-dust3r"
+#  Used by Comfy Registry https://comfyregistry.org
+
+[tool.comfy]
+PublisherId = ""
+DisplayName = "ComfyUI-dust3r"
+Icon = ""
